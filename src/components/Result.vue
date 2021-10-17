@@ -1,18 +1,18 @@
 <template>
   <v-container>
-        <v-row>
+      <v-row>
             <v-col>
-                <h2>Use this calculator to work out the approximate A.B.V. of home-brewed drinks.</h2>
+                <h2>Your {{drinkType}} is approximately {{result}}% A.B.V.</h2>
             </v-col>
-        </v-row>
-        <v-row>
+      </v-row>
+      <v-row>
             <v-col>
                 <v-btn 
-                    v-on:click="start"
+                    v-on:click="reset"
                     elevation="2"
                     color="accent"
                     rounded>
-                    Start
+                    Reset
                 </v-btn>
             </v-col>
         </v-row>
@@ -20,26 +20,25 @@
 </template>
 
 <script>
-import EventBus from '../../event-bus.js';
+import EventBus from '../../event-bus';
 
 export default {
-  name: 'Home',
+  name: 'Result',
   data() {
       return {
-          stage: 1,
-          started: false
+          stage: 6
     }
   },
+  props: ['drinkType', 'result'],
   methods: {
-      start() {
-          this.started = true;
-          EventBus.$emit('changeStep', this.stage + 1);
+      reset () {
+          EventBus.$emit('reset');
       }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
 
 </style>
