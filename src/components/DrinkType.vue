@@ -13,7 +13,8 @@
                     :key="`drink-${n}`"
                     :label="n"
                     :value="n"
-                ></v-radio>
+                >
+                </v-radio>
             </v-radio-group>
             <v-radio-group column v-model="selected" class="d-flex d-md-none">
                 <v-radio
@@ -34,14 +35,17 @@
       <v-row v-show="this.selected == 'Mead'">
             <v-col cols="3"></v-col>
             <v-col cols="6">
-                <v-text-field
-                    label="Mass of honey"
-                    suffix="grams"
-                    v-model.number="totalHoney">
-                </v-text-field>            
+                <v-form class="d-flex flex-grow-1" v-on:submit="select">
+                    <v-text-field
+                        label="Mass of honey"
+                        suffix="grams"
+                        v-model.number="totalHoney"
+                        pattern="\d*">
+                    </v-text-field>
+                </v-form>
             </v-col>
       </v-row>
-      <v-row>
+      <v-row v-show="this.selected != 'Mead' || this.totalHoney > 0">
             <v-col>
                 <v-btn 
                     v-on:click="select"
@@ -62,7 +66,6 @@ export default {
   data() {
       return {
           stage: 2,
-          show: false,
           drinks: [
               'Beer',
               'Wine',
@@ -70,11 +73,16 @@ export default {
               'Mead'
           ],
           selected: 'Beer',
-          totalHoney: 0
+          totalHoney: ''
     }
   },
   methods: {
-      select () {
+      restoreDefaults () {
+          this.selected = 'Beer';
+          this.totalHoney = '';
+      },
+      select (e) {
+          if(e != null) e.preventDefault();
           if(!(this.selected == 'Mead' && this.totalHoney == 0)) {
             EventBus.$emit('drinkDataUpdate',{ 'key': 'type', 'value': this.selected });
             EventBus.$emit('drinkDataUpdate',{ 'key': 'totalHoney', 'value': this.totalHoney });
@@ -82,9 +90,10 @@ export default {
           }
       }
   },
+  props: ['drinkData'],
   mounted(){
-      EventBus.$on('start', () => {
-          this.show = true;
+      EventBus.$on('reset', () => {
+          this.restoreDefaults();
       });
   }
 }

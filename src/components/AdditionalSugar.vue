@@ -1,5 +1,6 @@
 <template>
   <v-container>
+      <BackButton :stage='this.stage' />
       <v-row>
             <v-col>
                 <h2>Have you added any additional sugar?</h2>
@@ -30,12 +31,17 @@
       <v-row v-show="additionalSugarAdded">
             <v-col cols="3"></v-col>
             <v-col cols="6">
-                <v-text-field
-                    v-on:keyup="toggleContinue"
-                    label="How much did you add?"
-                    suffix="grams"
-                    v-model.number="additionalSugar">
-                </v-text-field>            
+                <v-form class="d-flex flex-grow-1" v-on:submit="select">
+                    <v-text-field
+                        v-on:keyup="toggleContinue"
+                        label="How much did you add?"
+                        suffix="grams"
+                        pattern="\d*"
+                        v-model.number="additionalSugar"
+                        v-on:click="clearInput"
+                        v-on:blur="restoreInput">
+                    </v-text-field>
+                </v-form>
             </v-col>
       </v-row>
       <v-row v-show="allowContinue">
@@ -54,6 +60,7 @@
 
 <script>
 import EventBus from '../../event-bus';
+import BackButton from './BackButton.vue';
 
 export default {
   name: 'AdditionalSugar',
@@ -67,6 +74,11 @@ export default {
   },
   props: ['defaultSugar'],
   methods: {
+      restoreDefaults () {
+          this.additionalSugarAdded = false;
+          this.additionalSugar = 0;
+          this.allowContinue = false;
+      },
       addAdditionalSugar () {
           this.additionalSugarAdded = true;
       },
@@ -77,10 +89,25 @@ export default {
               this.allowContinue = false;
           }
       },
-      select () {
+      select (e) {
+        if (e != null) e.preventDefault();
         EventBus.$emit('drinkDataUpdate',{ 'key': 'additionalSugar', 'value': this.additionalSugar });
         EventBus.$emit('changeStep', this.stage + 1);
+      },
+      clearInput () {
+          this.additionalSugar = this.additionalSugar == 0 ? '' : this.additionalSugar;
+      },
+      restoreInput () {
+          this.additionalSugar = this.additionalSugar == '' ? 0 : this.additionalSugar;
       }
+  },
+  mounted () {
+      EventBus.$on('reset', () => {
+          this.restoreDefaults();
+      });
+  },
+  components: {
+      BackButton
   }
 }
 </script>

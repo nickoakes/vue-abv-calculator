@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <div id="app" align="center">
+      <Summary v-show='this.currentStage > 2' :stage='this.currentStage' :drinkData='this.drinkData' :icon='this.defaultSugar.find(x => x.type == drinkData.type).icon' />
       <Home v-show="this.currentStage == 1" />
       <DrinkType v-show="this.currentStage == 2" />
       <DefaultSugar :defaultSugar='defaultSugar.find(x => x.type == drinkData.type)' v-show="this.currentStage == 3" mass="this.defaultSugar[this.drinkData.type]" />
@@ -12,12 +13,13 @@
 </template>
 
 <script>
-import Home from './components/Home.vue'
-import DrinkType from './components/DrinkType.vue'
-import DefaultSugar from './components/DefaultSugar.vue'
-import AdditionalSugar from './components/AdditionalSugar.vue'
-import TotalVolume from './components/TotalVolume.vue'
-import Result from './components/Result.vue'
+import Summary from './components/Summary.vue';
+import Home from './components/Home.vue';
+import DrinkType from './components/DrinkType.vue';
+import DefaultSugar from './components/DefaultSugar.vue';
+import AdditionalSugar from './components/AdditionalSugar.vue';
+import TotalVolume from './components/TotalVolume.vue';
+import Result from './components/Result.vue';
 
 import EventBus from '../event-bus.js';
 
@@ -36,21 +38,25 @@ export default {
       defaultSugar: [
         {
           type: 'Beer',
+          icon: 'mdi-glass-mug-variant',
           sugarContent: 517.7,
           units: 'grams per one standard 40-pint beer kit'
         },
         {
           type: 'Wine',
+          icon: 'mdi-glass-wine',
           sugarContent: 160,
           units: 'grams per 1000ml of red grape juice'
         },
         {
           type: 'Cider',
+          icon: 'mdi-food-apple',
           sugarContent: 100,
           units: 'grams per 1000ml of apple juice'
         },
         {
           type: 'Mead',
+          icon: 'mdi-beehive-outline',
           sugarContent: 81,
           units: 'grams per 100g of clear honey'
         }
@@ -110,6 +116,7 @@ export default {
         additionalSugar: 0,
         totalVolume: 0
       };
+      this.selected = 'Beer';
       this.result = 0;
     }
   },
@@ -132,6 +139,7 @@ export default {
       });
   },
   components: {
+    Summary,
     Home,
     DrinkType,
     DefaultSugar,
@@ -149,6 +157,11 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+button.v-btn span {
+  color: #FFF;
+  font-weight: 700;
 }
 
 .v-application--wrap {

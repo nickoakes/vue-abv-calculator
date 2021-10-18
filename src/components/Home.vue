@@ -26,13 +26,11 @@ export default {
   name: 'Home',
   data() {
       return {
-          stage: 1,
-          started: false
+          stage: 1
     }
   },
   methods: {
       start() {
-          this.started = true;
           EventBus.$emit('changeStep', this.stage + 1);
       }
   }
